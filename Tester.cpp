@@ -108,6 +108,20 @@ int Tester::getRand(int min, int max)
     return (rand() % (max - min + 1)) + min;
 }
 
+void Tester::printTests()
+{
+    cout << "testset:\n";
+    int testnum = 0;
+    for (auto tests : testset)
+    {
+        cout << "Test No. " << testnum++ << endl;
+        for (auto tp : tests)
+        {
+            cout << "\tRAM[" << tp.offset + tp.segment << "], " << tp.value << endl;
+        }
+    }
+}
+
 void Tester::writeTests()
 {
     std::ostringstream oss;
@@ -232,8 +246,30 @@ TestPoint Tester::parseTestPoints(string testPoints)
 {
     TestPoint tp;
     vector<string> tokens = StringHelper::split(testPoints, ' ');
+    if (tokens[0] == "pointer")
+    {
+        if (tokens[1] == "0")
+        {
+            tokens[0] = "this";
+            tokens[1] = "0";
+        }
+        else if (tokens[1] == "1")
+        {
+            tokens[0] = "that";
+            tokens[1] = "0";
+        }
+        else
+        {
+            cerr << "pointer x not recognised\n";
+        }
+    }
+    if (tokens[0] == "constant")
+    {
+        cerr << "constant isn't a memory segment\n";   
+    }
 
     tp.segment = segmap[tokens[0]];
+
     tp.offset = stoi(tokens[1]);
     if (tokens[2].find(":") != string::npos)
     {
@@ -253,4 +289,5 @@ void Tester::build()
     getUsedMemory();
     parseTestSet();
     writeTests();
+    printTests();
 }

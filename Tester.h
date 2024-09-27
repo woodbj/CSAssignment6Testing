@@ -40,6 +40,7 @@ private:
     void printUsedMemory();
     int getRand(int min, int max);
     void writeTests();
+    void printTests();
 
     TestSet testset;
     void parseTestSet();
