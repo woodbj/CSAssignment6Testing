@@ -1,0 +1,31 @@
+This folder contains files to automatically produce test scripts for .vm files
+It is intended to compare your translator against the built in translator
+
+Step 1)
+first of all you need to have your translator and the tester in your ~/.bashrc file. For me:
+export PATH=${PATH}:~/csadelaide-nand2tetris/tools
+export PATH=${PATH}:~/csadelaide-nand2tetris/projects/prac6/VMTranslator
+export PATH=${PATH}:~/csadelaide-nand2tetris/projects/prac6/Tester
+then run $source ~/.basrc to load it all in
+
+Step 2)
+cd to the tester directory and compile the tester on your machine using $make all
+
+Step 3)
+create a NAME.test file where NAME is the same as your .vm file, i.e AddSub.vm will test with AddSub.test
+
+each line in the .test file will create a new AddSubXX series of files
+
+the format is:
+segment offset x; segment offset y
+
+or
+
+segment offset x:y; segment offset s:t for a randomly generated range of variables
+
+each string separated by a ; will preload the given memory address with the value in the .tst files.
+
+Step 4)
+with a file.vm and a file.test in a directory of your choosing, run $Test.sh
+
+It will translate your .vm to .asm, generate all the .tst, .cmp and .out files, and tell you if End of script - Comparison ended successfully
