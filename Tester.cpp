@@ -155,11 +155,12 @@ void Tester::writeTests()
 
         string outputs = "// enter outputs to compare\n";
         outputs += "output-list\n";
+
         outputs += "RAM[0]%D1.6.1\n";
-        outputs += "RAM[1]%D1.6.1\n";
-        outputs += "RAM[2]%D1.6.1\n";
-        outputs += "RAM[3]%D1.6.1\n";
-        outputs += "RAM[4]%D1.6.1\n";
+        // outputs += "RAM[1]%D1.6.1\n";
+        // outputs += "RAM[2]%D1.6.1\n";
+        // outputs += "RAM[3]%D1.6.1\n";
+        // outputs += "RAM[4]%D1.6.1\n";
 
         for (int i = 0; i < maxStackSize; i++)
         {
@@ -171,9 +172,9 @@ void Tester::writeTests()
         {
             Segment seg = parseSegment(i);
             int addr = segmap[seg.segment] + seg.offset;
-            outputs += "\nRAM[";
+            outputs += "RAM[";
             outputs += to_string(addr);
-            outputs += "]%D1.11.1";
+            outputs += "]%D1.11.1\n";
         }
         outputs += ";\noutput;";
         memsetup += "\n// Test inputs\n";

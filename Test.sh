@@ -17,7 +17,6 @@ for vm_file in "${vm_files[@]}"
 do
     base_name="${vm_file%.vm}"
 
-
     echo "--Testing $base_name--"
     TestBuilder "$vm_file"
 
@@ -29,13 +28,25 @@ do
     for tst_file in "${base_name}"*.tst
     do
         test_name="${tst_file%.tst}"
-        
+
         if [[ -e "$tst_file" && ! "$tst_file" == *".asm.tst" ]]; then  # Check if the .tst file exists and is not .asm.tst
-            # echo "--Building compare file for $tst_file--"
-            timeout 0.75 VMEmulator.sh "$tst_file" |
+
+            # Run VMEmulator.sh in the background
+            VMEmulator.sh "$tst_file" > em.log & 
+            vm_pid=$!
+
+            # Monitor the output for "End of script" and terminate VMEmulator.sh when found
+            while read -r line; do
+                if [[ "$line" == *"End of script"* ]]; then
+                    kill $vm_pid  # Terminate VMEmulator.sh process
+                    break
+                fi
+            done < <(VMEmulator.sh "$tst_file")
+
+            wait $vm_pid  # Wait for the process to terminate
 
             # echo "--Testing ASM for $test_name--"
-            CPUEmulator.sh "${test_name}.asm.tst"  # Adjust this if there are multiple asm files
+            printf "%s " "$test_name" && CPUEmulator.sh "${test_name}.asm.tst"  # Adjust this if there are multiple asm files
         fi
     done
 done

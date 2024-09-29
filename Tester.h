@@ -55,7 +55,8 @@ private:
         {"this", 3000},
         {"that", 3010},
         {"temp", 5},
-        {"static", 16}
+        {"static", 16},
+        {"address", 0}
     };
 
 public:
