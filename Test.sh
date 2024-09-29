@@ -17,22 +17,22 @@ for vm_file in "${vm_files[@]}"
 do
     base_name="${vm_file%.vm}"
 
-    echo "--Building tests for $base_name--"
+
+    echo "--Testing $base_name--"
     TestBuilder "$vm_file"
 
-    echo "--Translating $base_name to asm--"
+    # echo "--Translating $base_name to asm--"
     VMTranslator "$vm_file"
 
-    echo "--Running tests--"
+    # echo "--Running tests--"
     # Loop through all corresponding .tst files for this base name
     for tst_file in "${base_name}"*.tst
     do
         test_name="${tst_file%.tst}"
         
         if [[ -e "$tst_file" && ! "$tst_file" == *".asm.tst" ]]; then  # Check if the .tst file exists and is not .asm.tst
-            echo $tst_file
             # echo "--Building compare file for $tst_file--"
-            timeout 1 VMEmulator.sh "$tst_file"
+            timeout 0.75 VMEmulator.sh "$tst_file" |
 
             # echo "--Testing ASM for $test_name--"
             CPUEmulator.sh "${test_name}.asm.tst"  # Adjust this if there are multiple asm files

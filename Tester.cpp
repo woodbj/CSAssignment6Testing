@@ -41,23 +41,26 @@ void Tester::getUsedMemory()
 
             if (tokens.size() == 3)
             {
-                if (tokens[1] != "constant")
+                // constant is on the inside so the stack size counter doesn't ignore it
+                if (tokens[0] == "push")
                 {
-
-                    if (tokens[0] == "push")
+                    stacksize++;
+                    if (tokens[1] != "constant")
                     {
-                        stacksize++;
                         string name = tokens[1] + " " + tokens[2];
                         usedMemory.emplace(name);
                     }
-                    else if (tokens[0] == "pop")
-                    {
-                        stacksize--;
-                        string name = tokens[1] + " " + tokens[2];
-                        usedMemory.emplace(name);
-                    }
-                    maxStackSize = (stacksize > maxStackSize) ? stacksize : maxStackSize;
                 }
+                else if (tokens[0] == "pop")
+                {
+                    stacksize--;
+                    if (tokens[1] != "constant")
+                    {
+                        string name = tokens[1] + " " + tokens[2];
+                        usedMemory.emplace(name);
+                    }
+                }
+                maxStackSize = (stacksize > maxStackSize) ? stacksize : maxStackSize;
             }
         }
     }
@@ -110,15 +113,16 @@ int Tester::getRand(int min, int max)
 
 void Tester::printTests()
 {
-    cout << "testset:\n";
     int testnum = 0;
     for (auto tests : testset)
     {
-        cout << "Test No. " << testnum++ << endl;
+        cout << "Test No. " << testnum++ << '\t';
         for (auto tp : tests)
         {
-            cout << "\tRAM[" << tp.offset + tp.segment << "], " << tp.value << endl;
+            cout << "RAM[" << tp.offset + tp.segment << "], " << tp.value << '\t';
         }
+        cout << endl;
+
     }
 }
 
@@ -155,7 +159,12 @@ void Tester::writeTests()
         outputs += "RAM[1]%D1.6.1\n";
         outputs += "RAM[2]%D1.6.1\n";
         outputs += "RAM[3]%D1.6.1\n";
-        outputs += "RAM[4]%D1.6.1";
+        outputs += "RAM[4]%D1.6.1\n";
+
+        for (int i = 0; i < maxStackSize; i++)
+        {
+            outputs += "RAM[" + to_string(256 + i) + "]%D1.6.1\n";
+        }
 
         // add outputs for all the memory segments used
         for (auto i : usedMemory)
@@ -265,7 +274,7 @@ TestPoint Tester::parseTestPoints(string testPoints)
     }
     if (tokens[0] == "constant")
     {
-        cerr << "constant isn't a memory segment\n";   
+        cerr << "constant isn't a memory segment\n";
     }
 
     tp.segment = segmap[tokens[0]];
